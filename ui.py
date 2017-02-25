@@ -14,6 +14,8 @@ CLK = 22
 SW = 23
 DT = 27
 
+AMP = 17
+
 n = 1
 t = 0
 t2 = 0
@@ -48,7 +50,8 @@ def play(pin):
   if (t>0):
     Display.Show([8, 8, 8, 8])
     Display.Point([1,1,1,1])
-    system("/home/rn/tune.py " + str(n))
+    system("/home/rn/piRadio/tune.py " + str(n))
+    system("/home/rn/piRadio/auto_mute.sh")
   else:
     Display.Show([0x7f, 0x7f, 0x7f, 0x7f])
     Display.Point([0,0,0,0])
@@ -63,12 +66,16 @@ GPIO.add_event_detect(SW,  GPIO.FALLING, callback=play, bouncetime=500)
 GPIO.add_event_detect(CLK, GPIO.FALLING, callback=select, bouncetime=50)
 #GPIO.add_event_detect(DT,  GPIO.FALLING, callback=select, bouncetime=500)
 
+#GPIO.setup(AMP, GPIO.OUT)
+#GPIO.output(AMP, GPIO.LOW)
+
 Display = tm1637.TM1637(8,7,tm1637.BRIGHT_TYPICAL)
 
 #Display.Clear()
 Display.SetBrightnes(1)
 
 p = [1,0,1,0]
+t3 = 0
 
 while True:
   if (t > 0) or (t2 > 0):
@@ -86,4 +93,8 @@ while True:
     Display.Point(p)
     p.insert(0, p.pop())
 
+    t3 += 1
+    if (t3 > 30):
+      system("/home/rn/piRadio/auto_mute.sh")
+      t3 = 0
   sleep(1)

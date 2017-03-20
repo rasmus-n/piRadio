@@ -38,8 +38,8 @@ def select(pin):
   t = 10
 
   if n < 1:
-    n = 10
-  if n > 10:
+    n = 20
+  if n > 20:
     n = 1
 
   Display.Show([0x7f, 0x7f, int(n/10), n%10])

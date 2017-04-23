@@ -11,12 +11,15 @@ def get_playlist(number):
 
   for l in list_tsv.split("\n"):
     (n, name, typ, vol, url) = l.split("\t")
-    url = url.strip()
+    urls = [url.strip()]
     if n.isdigit() and int(n) == number:
       if typ.find("Podcast") > -1:
         (typ, l) = typ.split(":")
-        url = get_podcasts(url, int(l)) 
-      system("mpc clear; mpc volume " + str(vol) + "; mpc add \"" + url + "\"; mpc play")
+        urls = get_podcasts(urls[0], int(l)) 
+      system("mpc clear; mpc volume " + str(vol))
+      for url in urls:
+        system("mpc add \"" + url + "\"");
+      system("mpc play")
 
 def get_podcasts(url, number):
   xml_data=urllib.urlopen(url).read()
@@ -31,7 +34,7 @@ def get_podcasts(url, number):
       stream_list.append(item.find('enclosure').get('url'))
     else:
       break
-  return " ".join(stream_list[::-1])
+  return stream_list[::-1]
 
 
 if __name__ == "__main__":
